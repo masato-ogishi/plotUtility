@@ -17,6 +17,7 @@ savePDF <- function(graphicObject=NULL, outputFileName="plot.pdf", width=8, heig
     message("Retrieving the last plot depicted...")
     graphicObject <- ggplot2::last_plot()
   }
+  print(graphicObject)
   OS <- Sys.info()[["sysname"]]
   if(OS=="Windows"){
     .gsPath <- "C:/gs/gs9.16/bin/gswin32c.exe"
