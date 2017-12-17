@@ -1,7 +1,7 @@
 Package: plotUtility
 Type: Package
 Title: Plot utility functions
-Version: 0.1.0
+Version: 0.1.1
 Author: Masato Ogishi
 Maintainer: Masato Ogishi <oogishi-tky@umin.ac.jp>
 Description: Plot utility functions.
