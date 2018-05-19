@@ -6,20 +6,20 @@
 \title{Plot saving utilities}
 \usage{
 savePDF(graphicObject = NULL, outputFileName = "plot.pdf", width = 8,
-  height = 5, pointsize = 12, useDingbats = F)
+  height = 5, pointsize = 12, deviceType = "pdf")
 }
 \arguments{
 \item{graphicObject}{The plot object to be saved. If missing, the most recently depicted plot will be saved.}
 
-\item{outputFileName}{The name of the exported PDF file}
+\item{outputFileName}{The name of the exported PDF file.}
 
-\item{width}{A plot width}
+\item{width}{A width.}
 
-\item{height}{A plot height}
+\item{height}{A height.}
 
-\item{pointsize}{A pointsize}
+\item{pointsize}{A pointsize.}
 
-\item{useDingbats}{Logical indicating whether points shuold be replaced with the Dingbat font.}
+\item{deviceType}{The type of the output device. Can be either "pdf" or "cairo".}
 }
 \description{
 Plot saving utilities

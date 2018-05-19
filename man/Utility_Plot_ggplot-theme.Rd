@@ -2,7 +2,7 @@
 % Please edit documentation in R/Utility_Plot.R
 \name{theme_Publication}
 \alias{theme_Publication}
-\title{The publication-ready ggplot theme}
+\title{A publication-ready ggplot theme}
 \usage{
 theme_Publication(base_size = 18)
 }
@@ -10,5 +10,5 @@ theme_Publication(base_size = 18)
 \item{base_size}{The base font size.}
 }
 \description{
-The publication-ready ggplot theme
+A publication-ready ggplot theme
 }

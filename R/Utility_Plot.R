@@ -1,62 +1,57 @@
 #' Plot saving utilities
-#' 
+#'
 #' @param graphicObject The plot object to be saved. If missing, the most recently depicted plot will be saved.
-#' @param outputFileName The name of the exported PDF file
-#' @param width A plot width
-#' @param height A plot height
-#' @param pointsize A pointsize
-#' @param useDingbats Logical indicating whether points shuold be replaced with the Dingbat font.
-#' @importFrom ggplot2 last_plot
-#' @importFrom stringr str_detect
+#' @param outputFileName The name of the exported PDF file.
+#' @param width A width.
+#' @param height A height.
+#' @param pointsize A pointsize.
+#' @param deviceType The type of the output device. Can be either "pdf" or "cairo".
 #' @export
 #' @rdname Utility_Plot
 #' @name Utility_Plot
-savePDF <- function(graphicObject=NULL, outputFileName="plot.pdf", width=8, height=5, pointsize=12, useDingbats=F){
+savePDF <- function(graphicObject=NULL, outputFileName="plot.pdf", width=8, height=5, pointsize=12, deviceType="pdf"){
   out <- ifelse(stringr::str_detect(outputFileName, ".pdf$"), outputFileName, paste0(outputFileName, ".pdf"))
   if(is.null(graphicObject)){
-    message("Retrieving the last plot depicted...")
-    graphicObject <- ggplot2::last_plot()
+    graphicObject <- grDevices::recordPlot()
   }
-  print(graphicObject)
   OS <- Sys.info()[["sysname"]]
   if(OS=="Windows"){
     .gsPath <- "C:/gs/gs9.16/bin/gswin32c.exe"
-    .gsOption <- "-sFONTPATH=C:/Windows/Fonts -dSubsetFonts=true -dEmbedAllFonts=true"
+    .gsOption <- "-sFONTPATH=C:/Windows/Fonts -dCompressFonts=true -dSubsetFonts=false -dEmbedAllFonts=true"
     Sys.setenv(R_GSCMD=.gsPath)
     grDevices::windowsFonts(Helvetica=grDevices::windowsFont("Helvetica"))
-    grDevices::dev.copy2pdf(file=out, width=width, height=height, pointsize=pointsize, family="Helvetica", useDingbats=useDingbats)
+    print(graphicObject)
+    grDevices::dev.copy2pdf(file=out, width=width, height=height, pointsize=pointsize, family="Helvetica", bg="transparent", out.type=deviceType)
+    grDevices::dev.off()
     grDevices::embedFonts(out, outfile=out, options=.gsOption)
   }else{
-    grDevices::dev.copy2pdf(file=out, width=width, height=height, pointsize=pointsize, useDingbats=useDingbats)
+    print(graphicObject)
+    grDevices::dev.copy2pdf(file=out, width=width, height=height, pointsize=pointsize, family="Helvetica", bg="transparent", out.type="pdf")
   }
 }
 
 #' Publication-ready ggplot scales
-#' @importFrom ggplot2 discrete_scale
-#' @importFrom scales manual_pal
 #' @export
 #' @rdname Utility_Plot_ggplot-scales
 #' @name Utility_Plot_ggplot-scales
 scale_color_Publication <- function() {
-  discrete_scale("color", "Publication", manual_pal(values=c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
+  discrete_scale("color", "Publication", scales::manual_pal(values=c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
 }
 #' @export
 #' @rdname Utility_Plot_ggplot-scales
 #' @name Utility_Plot_ggplot-scales
 scale_colour_Publication <- function() {
-  discrete_scale("colour", "Publication", manual_pal(values=c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
+  discrete_scale("colour", "Publication", scales::manual_pal(values=c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
 }
 #' @export
 #' @rdname Utility_Plot_ggplot-scales
 #' @name Utility_Plot_ggplot-scales
 scale_fill_Publication <- function() {
-  discrete_scale("fill", "Publication", manual_pal(values=c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
+  discrete_scale("fill", "Publication", scales::manual_pal(values=c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
 }
 
-#' The publication-ready ggplot theme
+#' A publication-ready ggplot theme
 #' @param base_size The base font size.
-#' @importFrom ggthemes theme_foundation
-#' @import ggplot2
 #' @export
 #' @rdname Utility_Plot_ggplot-theme
 theme_Publication <-
@@ -66,14 +61,14 @@ theme_Publication <-
       # Translation of a device-independent R graphics font family name to a windows font description
       grDevices::windowsFonts(Helvetica=grDevices::windowsFont("Helvetica"))
     }
-    
+
     # The preset ggplot parameters
     .pt <- 1 / 0.352777778
     .len0_null <- function(x) {
       if (length(x) == 0)  NULL
       else                 x
     }
-    
+
     # A ggplot theme for the "L" (left + bottom) border
     theme_L_border <- function(colour = "black", size = 1, linetype = 1) {
       # use with e.g.: ggplot(...) + theme( panel.border=theme_L_border() ) + ...
@@ -90,13 +85,13 @@ theme_Publication <-
       element_gp <- gpar(lwd = .len0_null(element$size * .pt), col = element$colour, lty = element$linetype)
       polylineGrob(
         x = c(x+width, x, x), y = c(y,y,y+height), ..., default.units = "npc",
-        gp = modifyList(element_gp, gp)
+        gp = utils::modifyList(element_gp, gp)
       )
     }
-    
+
     # A combined set of ggplot theme options
     (
-      theme_foundation(base_size = base_size, base_family = "Helvetica")
+      ggthemes::theme_foundation(base_size = base_size, base_family = "Helvetica")
       + theme(
         plot.title = element_text(
           face = "bold",
