@@ -3,10 +3,12 @@
 \name{Utility_Plot}
 \alias{Utility_Plot}
 \alias{savePDF}
-\title{Plot saving utilities}
+\title{Plot utilities.}
 \usage{
 savePDF(graphicObject = NULL, outputFileName = "plot.pdf", width = 8,
-  height = 5, pointsize = 12, deviceType = "pdf")
+  height = 5, pointsize = 12, deviceType = "Normal",
+  gsPath = "C:/gs/gs9.16/bin/gswin32c.exe",
+  gsOption = "-sFONTPATH=C:/Windows/Fonts -dCompressFonts=true -dSubsetFonts=false -dEmbedAllFonts=true")
 }
 \arguments{
 \item{graphicObject}{The plot object to be saved. If missing, the most recently depicted plot will be saved.}
@@ -19,8 +21,12 @@ savePDF(graphicObject = NULL, outputFileName = "plot.pdf", width = 8,
 
 \item{pointsize}{A pointsize.}
 
-\item{deviceType}{The type of the output device. Can be either "pdf" or "cairo".}
+\item{deviceType}{The type of the output graphics device. Can be either "Normal" or "Cairo".}
+
+\item{gsPath}{A path to the Ghostscript exe file.}
+
+\item{gsOption}{A character vector containing options to Ghostscript.}
 }
 \description{
-Plot saving utilities
+Plot utilities.
 }

@@ -3,6 +3,7 @@
 #' @name plotUtility
 #' @docType package
 #' @aliases plotUtility package-plotUtility
+#' @importFrom Cairo CairoPDF
 #' @importFrom stringr str_detect
 #' @importFrom ggthemes theme_foundation
 #' @importFrom scales manual_pal

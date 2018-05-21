@@ -1,33 +1,47 @@
-#' Plot saving utilities
+#' Plot utilities.
 #'
 #' @param graphicObject The plot object to be saved. If missing, the most recently depicted plot will be saved.
 #' @param outputFileName The name of the exported PDF file.
 #' @param width A width.
 #' @param height A height.
 #' @param pointsize A pointsize.
-#' @param deviceType The type of the output device. Can be either "pdf" or "cairo".
+#' @param deviceType The type of the output graphics device. Can be either "Normal" or "Cairo".
+#' @param gsPath A path to the Ghostscript exe file.
+#' @param gsOption A character vector containing options to Ghostscript.
 #' @export
 #' @rdname Utility_Plot
 #' @name Utility_Plot
-savePDF <- function(graphicObject=NULL, outputFileName="plot.pdf", width=8, height=5, pointsize=12, deviceType="pdf"){
+savePDF <- function(
+  graphicObject=NULL,
+  outputFileName="plot.pdf", width=8, height=5, pointsize=12, deviceType="Normal",
+  gsPath="C:/gs/gs9.16/bin/gswin32c.exe",
+  gsOption="-sFONTPATH=C:/Windows/Fonts -dCompressFonts=true -dSubsetFonts=false -dEmbedAllFonts=true"
+){
   out <- ifelse(stringr::str_detect(outputFileName, ".pdf$"), outputFileName, paste0(outputFileName, ".pdf"))
   if(is.null(graphicObject)){
-    graphicObject <- grDevices::recordPlot()
+    graphicObject <- ggplot2::last_plot()
+  }
+  if(is.null(graphicObject)){
+    graphicObject <- try(grDevices::recordPlot())
+    if(identical(class(graphicObject), "try-error")) return(NULL)
   }
   OS <- Sys.info()[["sysname"]]
   if(OS=="Windows"){
-    .gsPath <- "C:/gs/gs9.16/bin/gswin32c.exe"
-    .gsOption <- "-sFONTPATH=C:/Windows/Fonts -dCompressFonts=true -dSubsetFonts=false -dEmbedAllFonts=true"
-    Sys.setenv(R_GSCMD=.gsPath)
     grDevices::windowsFonts(Helvetica=grDevices::windowsFont("Helvetica"))
-    print(graphicObject)
-    grDevices::dev.copy2pdf(file=out, width=width, height=height, pointsize=pointsize, family="Helvetica", bg="transparent", out.type=deviceType)
-    grDevices::dev.off()
-    grDevices::embedFonts(out, outfile=out, options=.gsOption)
-  }else{
+  }
+  if(deviceType=="Normal"){
     print(graphicObject)
     grDevices::dev.copy2pdf(file=out, width=width, height=height, pointsize=pointsize, family="Helvetica", bg="transparent", out.type="pdf")
+    grDevices::dev.off()
   }
+  if(deviceType=="Cairo"){
+    Cairo::CairoPDF(file=out, width=width, height=height, pointsize=pointsize, family="Helvetica", bg="transparent")
+    print(graphicObject)
+    grDevices::dev.off()
+  }
+  Sys.setenv(R_GSCMD=gsPath)
+  grDevices::embedFonts(out, outfile=out, options=gsOption)
+  return(invisible(NULL))
 }
 
 #' Publication-ready ggplot scales
@@ -35,19 +49,19 @@ savePDF <- function(graphicObject=NULL, outputFileName="plot.pdf", width=8, heig
 #' @rdname Utility_Plot_ggplot-scales
 #' @name Utility_Plot_ggplot-scales
 scale_color_Publication <- function() {
-  discrete_scale("color", "Publication", scales::manual_pal(values=c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
+  discrete_scale("color", "Publication", scales::manual_pal(values=c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")))
 }
 #' @export
 #' @rdname Utility_Plot_ggplot-scales
 #' @name Utility_Plot_ggplot-scales
 scale_colour_Publication <- function() {
-  discrete_scale("colour", "Publication", scales::manual_pal(values=c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
+  discrete_scale("colour", "Publication", scales::manual_pal(values=c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")))
 }
 #' @export
 #' @rdname Utility_Plot_ggplot-scales
 #' @name Utility_Plot_ggplot-scales
 scale_fill_Publication <- function() {
-  discrete_scale("fill", "Publication", scales::manual_pal(values=c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
+  discrete_scale("fill", "Publication", scales::manual_pal(values=c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")))
 }
 
 #' A publication-ready ggplot theme
