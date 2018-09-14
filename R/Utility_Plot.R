@@ -1,5 +1,6 @@
 #' Plot utilities.
 #'
+#' @param p A p-value, or a set of p-values.
 #' @param graphicObject The plot object to be saved. If missing, the most recently depicted plot will be saved.
 #' @param outputFileName The name of the exported PDF file.
 #' @param width A width.
@@ -8,6 +9,7 @@
 #' @param deviceType The type of the output graphics device. Can be either "Normal" or "Cairo".
 #' @param gsPath A path to the Ghostscript exe file.
 #' @param gsOption A character vector containing options to Ghostscript.
+
 #' @export
 #' @rdname Utility_Plot
 #' @name Utility_Plot
@@ -44,6 +46,14 @@ savePDF <- function(
   return(invisible(NULL))
 }
 
+#' Statistical significance
+#' @export
+#' @rdname Utility_Plot_ggplot-significance
+#' @name Utility_Plot_ggplot-significance
+format_pvalue <- function(p){
+  stringr::str_replace(paste0("P=",format.pval(p, 1)), "=<", "<")
+}
+
 #' Publication-ready ggplot scales
 #' @export
 #' @rdname Utility_Plot_ggplot-scales
@@ -51,12 +61,14 @@ savePDF <- function(
 scale_color_Publication <- function() {
   discrete_scale("color", "Publication", scales::manual_pal(values=c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")))
 }
+
 #' @export
 #' @rdname Utility_Plot_ggplot-scales
 #' @name Utility_Plot_ggplot-scales
 scale_colour_Publication <- function() {
   discrete_scale("colour", "Publication", scales::manual_pal(values=c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")))
 }
+
 #' @export
 #' @rdname Utility_Plot_ggplot-scales
 #' @name Utility_Plot_ggplot-scales

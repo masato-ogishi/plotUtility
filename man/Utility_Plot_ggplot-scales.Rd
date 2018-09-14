@@ -3,9 +3,7 @@
 \name{Utility_Plot_ggplot-scales}
 \alias{Utility_Plot_ggplot-scales}
 \alias{scale_color_Publication}
-\alias{Utility_Plot_ggplot-scales}
 \alias{scale_colour_Publication}
-\alias{Utility_Plot_ggplot-scales}
 \alias{scale_fill_Publication}
 \title{Publication-ready ggplot scales}
 \usage{

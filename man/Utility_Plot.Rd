@@ -26,6 +26,8 @@ savePDF(graphicObject = NULL, outputFileName = "plot.pdf", width = 8,
 \item{gsPath}{A path to the Ghostscript exe file.}
 
 \item{gsOption}{A character vector containing options to Ghostscript.}
+
+\item{p}{A p-value, or a set of p-values.}
 }
 \description{
 Plot utilities.
