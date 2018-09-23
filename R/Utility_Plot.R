@@ -1,21 +1,20 @@
 #' Plot utilities.
 #'
-#' @param p A p-value, or a set of p-values.
 #' @param graphicObject The plot object to be saved. If missing, the most recently depicted plot will be saved.
 #' @param outputFileName The name of the exported PDF file.
 #' @param width A width.
 #' @param height A height.
 #' @param pointsize A pointsize.
-#' @param deviceType The type of the output graphics device. Can be either "Normal" or "Cairo".
+#' @param gsEmbetFont Logical. Whether fonts should be embedded using ghostscript.
 #' @param gsPath A path to the Ghostscript exe file.
 #' @param gsOption A character vector containing options to Ghostscript.
-
 #' @export
 #' @rdname Utility_Plot
 #' @name Utility_Plot
 savePDF <- function(
   graphicObject=NULL,
-  outputFileName="plot.pdf", width=8, height=5, pointsize=12, deviceType="Normal",
+  outputFileName="plot.pdf", width=8, height=5, pointsize=12,
+  gsEmbetFont=T,
   gsPath="C:/gs/gs9.16/bin/gswin32c.exe",
   gsOption="-sFONTPATH=C:/Windows/Fonts -dCompressFonts=true -dSubsetFonts=false -dEmbedAllFonts=true"
 ){
@@ -31,22 +30,43 @@ savePDF <- function(
   if(OS=="Windows"){
     grDevices::windowsFonts(Helvetica=grDevices::windowsFont("Helvetica"))
   }
-  if(deviceType=="Normal"){
-    print(graphicObject)
-    grDevices::dev.copy2pdf(file=out, width=width, height=height, pointsize=pointsize, family="Helvetica", bg="transparent", out.type="pdf")
-    grDevices::dev.off()
+  print(graphicObject)
+  grDevices::dev.copy2pdf(file=out, width=width, height=height, pointsize=pointsize, family="Helvetica", bg="transparent", out.type="pdf")
+  grDevices::dev.off()
+  if(gsEmbetFont){
+    Sys.setenv(R_GSCMD=gsPath)
+    grDevices::embedFonts(out, outfile=out, options=gsOption)
   }
-  if(deviceType=="Cairo"){
-    Cairo::CairoPDF(file=out, width=width, height=height, pointsize=pointsize, family="Helvetica", bg="transparent")
-    print(graphicObject)
-    grDevices::dev.off()
+  print(normalizePath(out))
+  return(invisible(NULL))
+}
+
+#' @export
+#' @rdname Utility_Plot
+#' @name Utility_Plot
+savePPTX <- function(
+  graphicObject=NULL,
+  outputFileName="plot.pptx"
+){
+  out <- ifelse(stringr::str_detect(outputFileName, ".pptx$"), outputFileName, paste0(outputFileName, ".pptx"))
+  if(is.null(graphicObject)){
+    graphicObject <- ggplot2::last_plot()
   }
-  Sys.setenv(R_GSCMD=gsPath)
-  grDevices::embedFonts(out, outfile=out, options=gsOption)
+  if(is.null(graphicObject)){
+    graphicObject <- try(grDevices::recordPlot())
+    if(identical(class(graphicObject), "try-error")) return(NULL)
+  }
+  print(graphicObject)
+  doc <- officer::read_pptx()
+  doc <- officer::add_slide(doc, layout="Title and Content", master="Office Theme")
+  doc <- rvg::ph_with_vg(doc, code=print(graphicObject), type="body")
+  print(doc, target=out)
+  grDevices::dev.off()
   return(invisible(NULL))
 }
 
 #' Statistical significance
+#' @param p A p-value, or a set of p-values.
 #' @export
 #' @rdname Utility_Plot_ggplot-significance
 #' @name Utility_Plot_ggplot-significance
@@ -80,6 +100,7 @@ scale_fill_Publication <- function() {
 #' @param base_size The base font size.
 #' @export
 #' @rdname Utility_Plot_ggplot-theme
+#' @name Utility_Plot_ggplot-theme
 theme_Publication <-
   function(base_size=18) {
     OS <- Sys.info()[["sysname"]]

@@ -7,6 +7,9 @@
 \usage{
 format_pvalue(p)
 }
+\arguments{
+\item{p}{A p-value, or a set of p-values.}
+}
 \description{
 Statistical significance
 }
