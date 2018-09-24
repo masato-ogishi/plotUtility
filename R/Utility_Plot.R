@@ -18,19 +18,22 @@ savePDF <- function(
   gsPath="C:/gs/gs9.16/bin/gswin32c.exe",
   gsOption="-sFONTPATH=C:/Windows/Fonts -dCompressFonts=true -dSubsetFonts=false -dEmbedAllFonts=true"
 ){
-  out <- ifelse(stringr::str_detect(outputFileName, ".pdf$"), outputFileName, paste0(outputFileName, ".pdf"))
-  if(is.null(graphicObject)){
-    graphicObject <- ggplot2::last_plot()
-  }
-  if(is.null(graphicObject)){
-    graphicObject <- try(grDevices::recordPlot())
-    if(identical(class(graphicObject), "try-error")) return(NULL)
-  }
   OS <- Sys.info()[["sysname"]]
   if(OS=="Windows"){
     grDevices::windowsFonts(Helvetica=grDevices::windowsFont("Helvetica"))
   }
-  print(graphicObject)
+  out <- ifelse(stringr::str_detect(outputFileName, ".pdf$"), outputFileName, paste0(outputFileName, ".pdf"))
+  if(is.null(graphicObject)){
+    graphicObject <- try(grDevices::recordPlot(), silent=T)
+    if(identical(class(graphicObject), "try-error")){
+      graphicObject <- ggplot2::last_plot()
+    }
+    if(!is.null(graphicObject)){
+      print(graphicObject)
+    }else{
+      return("No plot can be retrieved!")
+    }
+  }
   grDevices::dev.copy2pdf(file=out, width=width, height=height, pointsize=pointsize, family="Helvetica", bg="transparent", out.type="pdf")
   grDevices::dev.off()
   if(gsEmbetFont){
