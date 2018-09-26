@@ -28,12 +28,11 @@ savePDF <- function(
     if(identical(class(graphicObject), "try-error")){
       graphicObject <- ggplot2::last_plot()
     }
-    if(!is.null(graphicObject)){
-      print(graphicObject)
-    }else{
+    if(is.null(graphicObject)){
       return("No plot can be retrieved!")
     }
   }
+  print(graphicObject)
   grDevices::dev.copy2pdf(file=out, width=width, height=height, pointsize=pointsize, family="Helvetica", bg="transparent", out.type="pdf")
   grDevices::dev.off()
   if(gsEmbetFont){
