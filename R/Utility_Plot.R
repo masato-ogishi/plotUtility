@@ -4,7 +4,6 @@
 #' @param outputFileName The name of the exported PDF file.
 #' @param width A width.
 #' @param height A height.
-#' @param pointsize A pointsize.
 #' @param gsEmbetFont Logical. Whether fonts should be embedded using ghostscript.
 #' @param gsPath A path to the Ghostscript exe file.
 #' @param gsOption A character vector containing options to Ghostscript.
@@ -13,7 +12,9 @@
 #' @name Utility_Plot
 savePDF <- function(
   graphicObject=NULL,
-  outputFileName="plot.pdf", width=8, height=5, pointsize=12,
+  outputFileName="plot.pdf",
+  width=8,
+  height=5,
   gsEmbetFont=T,
   gsPath="C:/gs/gs9.16/bin/gswin32c.exe",
   gsOption="-sFONTPATH=C:/Windows/Fonts -dCompressFonts=true -dSubsetFonts=false -dEmbedAllFonts=true"
@@ -33,7 +34,7 @@ savePDF <- function(
     }
   }
   print(graphicObject)
-  grDevices::dev.copy2pdf(file=out, width=width, height=height, pointsize=pointsize, family="Helvetica", bg="transparent", out.type="pdf")
+  grDevices::dev.copy2pdf(file=out, width=width, height=height, pointsize=12, family="Helvetica", bg="transparent", out.type="pdf")
   grDevices::dev.off()
   if(gsEmbetFont){
     Sys.setenv(R_GSCMD=gsPath)
@@ -48,7 +49,9 @@ savePDF <- function(
 #' @name Utility_Plot
 savePPTX <- function(
   graphicObject=NULL,
-  outputFileName="plot.pptx"
+  outputFileName="plot.pptx",
+  width=8,
+  height=5
 ){
   out <- ifelse(stringr::str_detect(outputFileName, ".pptx$"), outputFileName, paste0(outputFileName, ".pptx"))
   if(is.null(graphicObject)){
@@ -60,8 +63,8 @@ savePPTX <- function(
   }
   print(graphicObject)
   doc <- officer::read_pptx()
-  doc <- officer::add_slide(doc, layout="Title and Content", master="Office Theme")
-  doc <- rvg::ph_with_vg(doc, code=print(graphicObject), type="body")
+  doc <- officer::add_slide(doc, layout="Blank", master="Office Theme")
+  doc <- rvg::ph_with_vg_at(doc, code=print(graphicObject), left=1, top=1, width=width, height=height)
   print(doc, target=out)
   grDevices::dev.off()
   return(invisible(NULL))

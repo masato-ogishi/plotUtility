@@ -7,11 +7,12 @@
 \title{Plot utilities.}
 \usage{
 savePDF(graphicObject = NULL, outputFileName = "plot.pdf", width = 8,
-  height = 5, pointsize = 12, gsEmbetFont = T,
+  height = 5, gsEmbetFont = T,
   gsPath = "C:/gs/gs9.16/bin/gswin32c.exe",
   gsOption = "-sFONTPATH=C:/Windows/Fonts -dCompressFonts=true -dSubsetFonts=false -dEmbedAllFonts=true")
 
-savePPTX(graphicObject = NULL, outputFileName = "plot.pptx")
+savePPTX(graphicObject = NULL, outputFileName = "plot.pptx",
+  width = 8, height = 5)
 }
 \arguments{
 \item{graphicObject}{The plot object to be saved. If missing, the most recently depicted plot will be saved.}
@@ -21,8 +22,6 @@ savePPTX(graphicObject = NULL, outputFileName = "plot.pptx")
 \item{width}{A width.}
 
 \item{height}{A height.}
-
-\item{pointsize}{A pointsize.}
 
 \item{gsEmbetFont}{Logical. Whether fonts should be embedded using ghostscript.}
 
