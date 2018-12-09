@@ -55,11 +55,13 @@ savePPTX <- function(
 ){
   out <- ifelse(stringr::str_detect(outputFileName, ".pptx$"), outputFileName, paste0(outputFileName, ".pptx"))
   if(is.null(graphicObject)){
-    graphicObject <- ggplot2::last_plot()
-  }
-  if(is.null(graphicObject)){
-    graphicObject <- try(grDevices::recordPlot())
-    if(identical(class(graphicObject), "try-error")) return(NULL)
+    graphicObject <- try(grDevices::recordPlot(), silent=T)
+    if(identical(class(graphicObject), "try-error")){
+      graphicObject <- ggplot2::last_plot()
+    }
+    if(is.null(graphicObject)){
+      return("No plot can be retrieved!")
+    }
   }
   print(graphicObject)
   doc <- officer::read_pptx()
@@ -67,6 +69,7 @@ savePPTX <- function(
   doc <- rvg::ph_with_vg_at(doc, code=print(graphicObject), left=1, top=1, width=width, height=height)
   print(doc, target=out)
   grDevices::dev.off()
+  print(normalizePath(out))
   return(invisible(NULL))
 }
 

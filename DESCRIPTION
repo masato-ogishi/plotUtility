@@ -1,7 +1,7 @@
 Package: plotUtility
 Type: Package
 Title: Utility functions for R graphics handling
-Version: 0.4.0
+Version: 0.4.1
 Author: Masato Ogishi
 Maintainer: Masato Ogishi <oogishi-tky@umin.ac.jp>
 Description: Utility functions for R graphics handling.
