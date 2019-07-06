@@ -34,7 +34,7 @@ savePDF <- function(
     }
   }
   print(graphicObject)
-  grDevices::dev.copy2pdf(file=out, width=width, height=height, pointsize=12, family="Helvetica", bg="transparent", out.type="pdf")
+  grDevices::dev.copy2pdf(file=out, width=width, height=height, pointsize=12, family="Helvetica", bg="transparent", out.type="pdf", useDingbats=F)
   grDevices::dev.off()
   if(gsEmbetFont){
     Sys.setenv(R_GSCMD=gsPath)
