@@ -87,21 +87,21 @@ format_pvalue <- function(p){
 #' @rdname Utility_Plot_ggplot-scales
 #' @name Utility_Plot_ggplot-scales
 scale_color_Publication <- function() {
-  discrete_scale("color", "Publication", scales::manual_pal(values=c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")))
+  discrete_scale("color", "Publication", scales::manual_pal(values=c("#386cb0","#d95f02","#7fc97f","deepskyblue","forestgreen","#662506","#e7298a","#984ea3","#e6ab02","grey50")))
 }
 
 #' @export
 #' @rdname Utility_Plot_ggplot-scales
 #' @name Utility_Plot_ggplot-scales
 scale_colour_Publication <- function() {
-  discrete_scale("colour", "Publication", scales::manual_pal(values=c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")))
+  discrete_scale("colour", "Publication", scales::manual_pal(values=c("#386cb0","#d95f02","#7fc97f","deepskyblue","forestgreen","#662506","#e7298a","#984ea3","#e6ab02","grey50")))
 }
 
 #' @export
 #' @rdname Utility_Plot_ggplot-scales
 #' @name Utility_Plot_ggplot-scales
 scale_fill_Publication <- function() {
-  discrete_scale("fill", "Publication", scales::manual_pal(values=c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")))
+  discrete_scale("fill", "Publication", scales::manual_pal(values=c("#386cb0","#d95f02","#7fc97f","deepskyblue","forestgreen","#662506","#e7298a","#984ea3","#e6ab02","grey50")))
 }
 
 #' A publication-ready ggplot theme
@@ -110,7 +110,7 @@ scale_fill_Publication <- function() {
 #' @rdname Utility_Plot_ggplot-theme
 #' @name Utility_Plot_ggplot-theme
 theme_Publication <-
-  function(base_size=18) {
+  function(base_size=16) {
     OS <- Sys.info()[["sysname"]]
     if(OS=="Windows"){
       # Translation of a device-independent R graphics font family name to a windows font description
@@ -159,10 +159,10 @@ theme_Publication <-
         panel.border = theme_L_border(),
         panel.grid.major = element_line(size = .5, colour = "#f0f0f0"),
         panel.grid.minor = element_blank(),
-        axis.title = element_text(face = "bold"),
+        axis.title = element_text(size = rel(1.0)),
         axis.title.x = element_text(vjust = -0.25),
         axis.title.y = element_text(vjust = 1.5),
-        axis.text = element_text(),
+        axis.text = element_text(size = rel(0.9)),
         axis.line = element_line(size = .7, colour = "black"),
         axis.ticks = element_line(),
         legend.position = "right",
@@ -171,9 +171,9 @@ theme_Publication <-
         legend.key = element_rect(colour = NA),
         legend.key.size = unit(0.7, "cm"),
         legend.spacing = unit(0.5, "cm"),
-        legend.title = element_text(face = "bold"),
+        legend.title = element_text(face = "bold", size = rel(1.0)),
         strip.background = element_rect(colour = "#f0f0f0", fill = "#f0f0f0"),
-        strip.text = element_text(face = "bold")
+        strip.text = element_text(size = rel(1.0))
       )
     )
   }
