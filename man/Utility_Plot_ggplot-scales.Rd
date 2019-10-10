@@ -7,11 +7,14 @@
 \alias{scale_fill_Publication}
 \title{Publication-ready ggplot scales}
 \usage{
-scale_color_Publication()
+scale_color_Publication(palette = F)
 
-scale_colour_Publication()
+scale_colour_Publication(palette = F)
 
-scale_fill_Publication()
+scale_fill_Publication(palette = F)
+}
+\arguments{
+\item{palette}{Logical. If \code{FALSE}, a discrete scale for ggplot is returned. If \code{TRUE}, a color palette is returned.}
 }
 \description{
 Publication-ready ggplot scales
