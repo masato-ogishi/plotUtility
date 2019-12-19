@@ -4,6 +4,7 @@
 #' @param outputFileName The name of the exported PDF file.
 #' @param width A width.
 #' @param height A height.
+#' @param embedFont Whether the fonts need to be embedded using Ghostscript. Default: False.
 #' @param gsPath A path to the Ghostscript exe file.
 #' @param gsOption A character vector containing options to Ghostscript.
 #' @export
@@ -14,14 +15,20 @@ savePDF <- function(
   outputFileName="plot.pdf",
   width=8,
   height=5,
+  embedFont=F,
   gsPath="C:/gs/gs9.16/bin/gswin32c.exe",
   gsOption="-sFONTPATH=C:/Windows/Fonts -dCompressFonts=true -dSubsetFonts=false -dEmbedAllFonts=true"
 ){
+  # Prepare Helvetica fonts
   OS <- Sys.info()[["sysname"]]
   if(OS=="Windows"){
     grDevices::windowsFonts(Helvetica=grDevices::windowsFont("Helvetica"))
   }
+
+  # Prepare the output path
   out <- ifelse(stringr::str_detect(outputFileName, ".pdf$"), outputFileName, paste0(outputFileName, ".pdf"))
+
+  # Retrieve the previous graphics
   if(is.null(graphicObject)){
     graphicObject <- try(grDevices::recordPlot(), silent=T)
     if(identical(class(graphicObject), "try-error")){
@@ -31,14 +38,24 @@ savePDF <- function(
       return("No plot can be retrieved!")
     }
   }
+
+  # Save the graphics
   print(graphicObject)
   grDevices::dev.copy2pdf(file=out, width=width, height=height, pointsize=12, family="Helvetica", bg="transparent", out.type="pdf", useDingbats=F)
   grDevices::dev.off()
-  if(file.exists(gsPath)){
-    Sys.setenv(R_GSCMD=gsPath)
-    grDevices::embedFonts(out, outfile=out, options=gsOption)
+
+  # Embed fonts (optional)
+  if(embedFont==T){
+    if(file.exists(gsPath)){
+      Sys.setenv(R_GSCMD=gsPath)
+      grDevices::embedFonts(out, outfile=out, options=gsOption)
+    }
   }
+
+  # Print the output path
   print(normalizePath(out))
+
+  # Done
   return(invisible(NULL))
 }
 
@@ -51,7 +68,10 @@ savePPTX <- function(
   width=8,
   height=5
 ){
+  # Prepare the output path
   out <- ifelse(stringr::str_detect(outputFileName, ".pptx$"), outputFileName, paste0(outputFileName, ".pptx"))
+
+  # Retrieve the previous graphics
   if(is.null(graphicObject)){
     graphicObject <- try(grDevices::recordPlot(), silent=T)
     if(identical(class(graphicObject), "try-error")){
@@ -61,13 +81,19 @@ savePPTX <- function(
       return("No plot can be retrieved!")
     }
   }
+
+  # Save the graphics
   print(graphicObject)
   doc <- officer::read_pptx()
   doc <- officer::add_slide(doc, layout="Blank", master="Office Theme")
   doc <- rvg::ph_with_vg_at(doc, code=print(graphicObject), left=1, top=1, width=width, height=height)
   print(doc, target=out)
   grDevices::dev.off()
+
+  # Print the output path
   print(normalizePath(out))
+
+  # Done
   return(invisible(NULL))
 }
 
