@@ -86,7 +86,7 @@ savePPTX <- function(
   print(graphicObject)
   doc <- officer::read_pptx()
   doc <- officer::add_slide(doc, layout="Blank", master="Office Theme")
-  doc <- rvg::ph_with_vg_at(doc, code=print(graphicObject), left=1, top=1, width=width, height=height)
+  doc <- officer::ph_with(doc, value=graphicObject, location=officer::ph_location(left=1, top=1, width=width, height=height))
   print(doc, target=out)
   grDevices::dev.off()
 
@@ -211,6 +211,7 @@ theme_Publication <- function(base_size=14){
       legend.key.size=unit(0.7, "cm"),
       legend.spacing=unit(0.5, "cm"),
       legend.title=element_text(face="bold", size=rel(1.0)),
+      legend.text=element_text(size=rel(1.0)),
       strip.background=element_blank(),
       strip.text=element_text(size=rel(1.0))
     )
