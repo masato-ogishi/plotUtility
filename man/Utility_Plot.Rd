@@ -7,7 +7,7 @@
 \title{Plot utilities.}
 \usage{
 savePDF(
-  ggObject = NULL,
+  graphicsObject = NULL,
   outputFileName = "plot.pdf",
   width = 8,
   height = 5,
@@ -17,10 +17,15 @@ savePDF(
     gsOption = "-sFONTPATH=C:/Windows/Fonts -dCompressFonts=true -dSubsetFonts=false -dEmbedAllFonts=true"
 )
 
-savePPTX(ggObject = NULL, outputFileName = "plot.pptx", width = 8, height = 5)
+savePPTX(
+  graphicsObject = NULL,
+  outputFileName = "plot.pptx",
+  width = 8,
+  height = 5
+)
 }
 \arguments{
-\item{ggObject}{The ggplot object to be saved. If missing, the most recently depicted plot will be retrieved using ggplot2::last_plot.}
+\item{graphicsObject}{The plot object to be saved. If missing, the most recently depicted plot will be retrieved using ggplot2::last_plot or recordPlot. Note: recordPlot is not compatible with exporting an editable vector graphic in PowerPoint.}
 
 \item{outputFileName}{The name of the exported PDF file.}
 

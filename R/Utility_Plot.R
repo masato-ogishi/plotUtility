@@ -1,6 +1,6 @@
 #' Plot utilities.
 #'
-#' @param ggObject The ggplot object to be saved. If missing, the most recently depicted plot will be retrieved using ggplot2::last_plot.
+#' @param graphicsObject The plot object to be saved. If missing, the most recently depicted plot will be retrieved using ggplot2::last_plot or recordPlot. Note: recordPlot is not compatible with exporting an editable vector graphic in PowerPoint.
 #' @param outputFileName The name of the exported PDF file.
 #' @param width A width.
 #' @param height A height.
@@ -11,7 +11,7 @@
 #' @rdname Utility_Plot
 #' @name Utility_Plot
 savePDF <- function(
-  ggObject=NULL,
+  graphicsObject=NULL,
   outputFileName="plot.pdf",
   width=8,
   height=5,
@@ -29,11 +29,12 @@ savePDF <- function(
   out <- ifelse(stringr::str_detect(outputFileName, ".pdf$"), outputFileName, paste0(outputFileName, ".pdf"))
 
   # Retrieve the previous graphics
-  if(is.null(ggObject)) ggObject <- ggplot2::last_plot()
-  if(is.null(ggObject)) return("No plot can be retrieved!")
+  if(is.null(graphicsObject)) graphicsObject <- ggplot2::last_plot()
+  if(is.null(graphicsObject)) try(graphicsObject <- grDevices::recordPlot(), silent=T)
+  if(identical(class(graphicsObject), "try-error")) return("No plot can be retrieved!")
 
   # Save the graphics
-  print(ggObject)
+  print(graphicsObject)
   grDevices::dev.copy2pdf(file=out, width=width, height=height, pointsize=12, family="Helvetica", bg="transparent", out.type="pdf", useDingbats=F)
   grDevices::dev.off()
 
@@ -56,7 +57,7 @@ savePDF <- function(
 #' @rdname Utility_Plot
 #' @name Utility_Plot
 savePPTX <- function(
-  ggObject=NULL,
+  graphicsObject=NULL,
   outputFileName="plot.pptx",
   width=8,
   height=5
@@ -65,15 +66,17 @@ savePPTX <- function(
   out <- ifelse(stringr::str_detect(outputFileName, ".pptx$"), outputFileName, paste0(outputFileName, ".pptx"))
 
   # Retrieve the previous graphics
-  if(is.null(ggObject)) ggObject <- ggplot2::last_plot()
-  if(is.null(ggObject)) return("No plot can be retrieved!")
-  print(ggObject)
+  if(is.null(graphicsObject)) graphicsObject <- ggplot2::last_plot()
+  if(is.null(graphicsObject)) try(graphicsObject <- grDevices::recordPlot(), silent=T)
+  if(identical(class(graphicsObject), "try-error")) return("No plot can be retrieved!")
 
   # Save the graphics
-  ggObject <- rvg::dml(ggobj=ggObject) ## convert the plot to the DrawingML object
+  if("ggplot" %in% class(graphicsObject)){
+    graphicsObject <- rvg::dml(ggobj=graphicsObject) ## convert the plot to the DrawingML object
+  }
   doc <- officer::read_pptx()
   doc <- officer::add_slide(doc, layout="Blank", master="Office Theme")
-  doc <- officer::ph_with(doc, value=ggObject, location=officer::ph_location(left=1, top=1, width=width, height=height))
+  doc <- officer::ph_with(doc, value=graphicsObject, location=officer::ph_location(left=1, top=1, width=width, height=height))
   print(doc, target=out)
   grDevices::dev.off()
 
