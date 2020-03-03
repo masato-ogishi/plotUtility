@@ -1,17 +1,17 @@
 #' Plot utilities.
 #'
-#' @param graphicObject The plot object to be saved. If missing, the most recently depicted plot will be saved.
+#' @param ggObject The ggplot object to be saved. If missing, the most recently depicted plot will be retrieved using ggplot2::last_plot.
 #' @param outputFileName The name of the exported PDF file.
 #' @param width A width.
 #' @param height A height.
-#' @param embedFont Whether the fonts need to be embedded using Ghostscript. Default: False.
+#' @param embedFont Whether the fonts need to be embedded using Ghostscript. Default is False.
 #' @param gsPath A path to the Ghostscript exe file.
 #' @param gsOption A character vector containing options to Ghostscript.
 #' @export
 #' @rdname Utility_Plot
 #' @name Utility_Plot
 savePDF <- function(
-  graphicObject=NULL,
+  ggObject=NULL,
   outputFileName="plot.pdf",
   width=8,
   height=5,
@@ -29,18 +29,11 @@ savePDF <- function(
   out <- ifelse(stringr::str_detect(outputFileName, ".pdf$"), outputFileName, paste0(outputFileName, ".pdf"))
 
   # Retrieve the previous graphics
-  if(is.null(graphicObject)){
-    graphicObject <- try(grDevices::recordPlot(), silent=T)
-    if(identical(class(graphicObject), "try-error")){
-      graphicObject <- ggplot2::last_plot()
-    }
-    if(is.null(graphicObject)){
-      return("No plot can be retrieved!")
-    }
-  }
+  if(is.null(ggObject)) ggObject <- ggplot2::last_plot()
+  if(is.null(ggObject)) return("No plot can be retrieved!")
 
   # Save the graphics
-  print(graphicObject)
+  print(ggObject)
   grDevices::dev.copy2pdf(file=out, width=width, height=height, pointsize=12, family="Helvetica", bg="transparent", out.type="pdf", useDingbats=F)
   grDevices::dev.off()
 
@@ -63,7 +56,7 @@ savePDF <- function(
 #' @rdname Utility_Plot
 #' @name Utility_Plot
 savePPTX <- function(
-  graphicObject=NULL,
+  ggObject=NULL,
   outputFileName="plot.pptx",
   width=8,
   height=5
@@ -72,21 +65,15 @@ savePPTX <- function(
   out <- ifelse(stringr::str_detect(outputFileName, ".pptx$"), outputFileName, paste0(outputFileName, ".pptx"))
 
   # Retrieve the previous graphics
-  if(is.null(graphicObject)){
-    graphicObject <- try(grDevices::recordPlot(), silent=T)
-    if(identical(class(graphicObject), "try-error")){
-      graphicObject <- ggplot2::last_plot()
-    }
-    if(is.null(graphicObject)){
-      return("No plot can be retrieved!")
-    }
-  }
+  if(is.null(ggObject)) ggObject <- ggplot2::last_plot()
+  if(is.null(ggObject)) return("No plot can be retrieved!")
+  print(ggObject)
 
   # Save the graphics
-  print(graphicObject)
+  ggObject <- rvg::dml(ggobj=ggObject) ## convert the plot to the DrawingML object
   doc <- officer::read_pptx()
   doc <- officer::add_slide(doc, layout="Blank", master="Office Theme")
-  doc <- officer::ph_with(doc, value=graphicObject, location=officer::ph_location(left=1, top=1, width=width, height=height))
+  doc <- officer::ph_with(doc, value=ggObject, location=officer::ph_location(left=1, top=1, width=width, height=height))
   print(doc, target=out)
   grDevices::dev.off()
 
@@ -179,9 +166,9 @@ theme_Publication <- function(base_size=14){
     colour=NULL, size=NULL, linetype=NULL,
     ...
   ){
-    gp <- gpar(lwd=.len0_null(size*.pt), col=colour, lty=linetype)
-    element_gp <- gpar(lwd=.len0_null(element$size*.pt), col=element$colour, lty=element$linetype)
-    polylineGrob(
+    gp <- grid::gpar(lwd=.len0_null(size*.pt), col=colour, lty=linetype)
+    element_gp <- grid::gpar(lwd=.len0_null(element$size*.pt), col=element$colour, lty=element$linetype)
+    grid::polylineGrob(
       x=c(x+width, x, x), y=c(y,y,y+height), ..., default.units="npc",
       gp=utils::modifyList(element_gp, gp)
     )

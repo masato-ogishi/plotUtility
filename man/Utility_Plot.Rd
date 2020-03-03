@@ -7,7 +7,7 @@
 \title{Plot utilities.}
 \usage{
 savePDF(
-  graphicObject = NULL,
+  ggObject = NULL,
   outputFileName = "plot.pdf",
   width = 8,
   height = 5,
@@ -17,15 +17,10 @@ savePDF(
     gsOption = "-sFONTPATH=C:/Windows/Fonts -dCompressFonts=true -dSubsetFonts=false -dEmbedAllFonts=true"
 )
 
-savePPTX(
-  graphicObject = NULL,
-  outputFileName = "plot.pptx",
-  width = 8,
-  height = 5
-)
+savePPTX(ggObject = NULL, outputFileName = "plot.pptx", width = 8, height = 5)
 }
 \arguments{
-\item{graphicObject}{The plot object to be saved. If missing, the most recently depicted plot will be saved.}
+\item{ggObject}{The ggplot object to be saved. If missing, the most recently depicted plot will be retrieved using ggplot2::last_plot.}
 
 \item{outputFileName}{The name of the exported PDF file.}
 
@@ -33,7 +28,7 @@ savePPTX(
 
 \item{height}{A height.}
 
-\item{embedFont}{Whether the fonts need to be embedded using Ghostscript. Default: False.}
+\item{embedFont}{Whether the fonts need to be embedded using Ghostscript. Default is False.}
 
 \item{gsPath}{A path to the Ghostscript exe file.}
 
