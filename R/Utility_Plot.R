@@ -29,9 +29,9 @@ savePDF <- function(
   out <- ifelse(stringr::str_detect(outputFileName, ".pdf$"), outputFileName, paste0(outputFileName, ".pdf"))
 
   # Retrieve the previous graphics
-  if(is.null(graphicsObject)) graphicsObject <- ggplot2::last_plot()
   if(is.null(graphicsObject)) try(graphicsObject <- grDevices::recordPlot(), silent=T)
-  if(identical(class(graphicsObject), "try-error")) return("No plot can be retrieved!")
+  if(identical(class(graphicsObject), "try-error")) graphicsObject <- ggplot2::last_plot()
+  if(is.null(graphicsObject)) return("No plot can be retrieved!")
 
   # Save the graphics
   print(graphicsObject)
@@ -66,9 +66,9 @@ savePPTX <- function(
   out <- ifelse(stringr::str_detect(outputFileName, ".pptx$"), outputFileName, paste0(outputFileName, ".pptx"))
 
   # Retrieve the previous graphics
-  if(is.null(graphicsObject)) graphicsObject <- ggplot2::last_plot()
   if(is.null(graphicsObject)) try(graphicsObject <- grDevices::recordPlot(), silent=T)
-  if(identical(class(graphicsObject), "try-error")) return("No plot can be retrieved!")
+  if(identical(class(graphicsObject), "try-error")) graphicsObject <- ggplot2::last_plot()
+  if(is.null(graphicsObject)) return("No plot can be retrieved!")
 
   # Save the graphics
   if("ggplot" %in% class(graphicsObject)){
