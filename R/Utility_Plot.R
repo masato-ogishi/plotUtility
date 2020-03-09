@@ -71,6 +71,7 @@ savePPTX <- function(
   if(is.null(graphicsObject)) return("No plot can be retrieved!")
 
   # Save the graphics
+  print(graphicsObject)
   if("ggplot" %in% class(graphicsObject)){
     graphicsObject <- rvg::dml(ggobj=graphicsObject) ## convert the plot to the DrawingML object
   }
