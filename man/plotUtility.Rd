@@ -6,5 +6,5 @@
 \alias{package-plotUtility}
 \title{plotUtility: utility functions for R graphics handling}
 \description{
-plotUtility: utility functions for R graphics handling
+In-house utility functions for data visualization.
 }
