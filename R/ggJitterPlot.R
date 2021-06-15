@@ -92,7 +92,7 @@ ggJitterPlot <- function(
   if(is.null(shape)){
     plt <- plt +
       geom_point(data=df, aes_string(x="X", y="Y", fill="Fill"),
-                 size=2.5, shape=21, color="black", position=position_jitterdodge(jitter.width=0.4, dodge.width=0.75)) +
+                 size=2.5, shape=21, color="black", position=position_jitterdodge(jitter.width=0.25, dodge.width=0.75)) +
       geom_crossbar(data=df_summary, aes_string(x="X", y="Y.mean", ymin="Y.mean", ymax="Y.mean", fill="Fill"),
                     width=0.9, size=0.2, position=position_dodge(width=0.75), show.legend=F) +
       geom_errorbar(data=df_summary, aes_string(x="X", ymin="Y.lo", ymax="Y.up", fill="Fill"),
@@ -116,7 +116,7 @@ ggJitterPlot <- function(
     if(identical(fill, shape)){
       plt <- plt +
         geom_point(data=df, aes_string(x="X", y="Y", group="Fill", fill="Fill", shape="Fill"),
-                   size=2.5, color="black", position=position_jitterdodge(jitter.width=0.4, dodge.width=0.75)) +
+                   size=2.5, color="black", position=position_jitterdodge(jitter.width=0.25, dodge.width=0.75)) +
         geom_crossbar(data=df_summary, aes_string(x="X", y="Y.mean", ymin="Y.mean", ymax="Y.mean", group="Fill", fill="Fill"),
                       width=0.9, size=0.2, position=position_dodge(width=0.75), show.legend=F) +
         geom_errorbar(data=df_summary, aes_string(x="X", ymin="Y.lo", ymax="Y.up", group="Fill", fill="Fill"),
@@ -143,7 +143,7 @@ ggJitterPlot <- function(
     }else{
       plt <- plt +
         geom_point(data=df, aes_string(x="X", y="Y", fill="Fill", shape="Shape"),
-                   size=2.5, color="black", position=position_jitterdodge(jitter.width=0.4, dodge.width=0.75)) +
+                   size=2.5, color="black", position=position_jitterdodge(jitter.width=0.25, dodge.width=0.75)) +
         geom_crossbar(data=df_summary, aes_string(x="X", y="Y.mean", ymin="Y.mean", ymax="Y.mean", fill="Fill"),
                       width=0.9, size=0.2, position=position_dodge(width=0.75), show.legend=F) +
         geom_errorbar(data=df_summary, aes_string(x="X", ymin="Y.lo", ymax="Y.up", fill="Fill"),

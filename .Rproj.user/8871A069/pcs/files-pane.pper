@@ -1,9 +1,9 @@
 {
-    "path" : "~/GitHub/plotUtility/R",
-    "sortOrder" : [
+    "path": "~/GitHub/plotUtility/R",
+    "sortOrder": [
         {
-            "ascending" : true,
-            "columnIndex" : 2
+            "ascending": true,
+            "columnIndex": 2
         }
     ]
 }
