@@ -1,7 +1,7 @@
 Package: plotUtility
 Type: Package
 Title: Utility functions for R graphics
-Version: 0.7
+Version: 0.7.1
 Author: Masato Ogishi
 Maintainer: Masato Ogishi <oogishi-tky@umin.ac.jp>
 Description: Utility functions for R graphics.
@@ -23,5 +23,4 @@ Imports:
     rvg,
     scales,
     stringr,
-    tidyverse,
     viridis

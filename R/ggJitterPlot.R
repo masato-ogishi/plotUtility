@@ -151,7 +151,7 @@ ggJitterPlot <- function(
         geom_errorbar(data=df_summary, aes_string(x="X", ymin="Y.lo", ymax="Y.up", fill="Fill"),
                       width=0.5, size=0.5, position=position_dodge(width=0.75), show.legend=F) +
         guides(fill=guide_legend(nrow=1, override.aes=list(shape=21)), shape=guide_legend(nrow=1))
-      ## The group determines dodging.
+      ## The group aes determines dodging.
       if(!is.null(colors)){
         plt <- plt +
           scale_fill_manual(values=colors)
