@@ -54,14 +54,14 @@ ggJitterPlot <- function(
     df_sub$"Facet" <- ""
     df <- df_sub
     df_summary <- df %>%
-      dplyr::group_by(X, Fill, Shape, Facet) %>%
+      dplyr::group_by(X, Fill, Facet) %>%
       dplyr::summarise(N=n(), Y.mean=mean(Y), Y.up=Y.mean+plotrix::std.error(Y), Y.lo=Y.mean-plotrix::std.error(Y))
   }else{
     if(length(facet)==1){
       df_sub$"Facet" <- df[[facet]]
       df <- df_sub
       df_summary <- df %>%
-        dplyr::group_by(X, Fill, Shape, Facet) %>%
+        dplyr::group_by(X, Fill, Facet) %>%
         dplyr::summarise(N=n(), Y.mean=mean(Y), Y.up=Y.mean+plotrix::std.error(Y), Y.lo=Y.mean-plotrix::std.error(Y))
     }
     if(length(facet)==2){
@@ -69,7 +69,7 @@ ggJitterPlot <- function(
       df_sub$"Facet2" <- df[[facet[2]]]
       df <- df_sub
       df_summary <- df %>%
-        dplyr::group_by(X, Fill, Shape, Facet1, Facet2) %>%
+        dplyr::group_by(X, Fill, Facet1, Facet2) %>%
         dplyr::summarise(N=n(), Y.mean=mean(Y), Y.up=Y.mean+plotrix::std.error(Y), Y.lo=Y.mean-plotrix::std.error(Y))
     }
   }
@@ -96,7 +96,8 @@ ggJitterPlot <- function(
       geom_crossbar(data=df_summary, aes_string(x="X", y="Y.mean", ymin="Y.mean", ymax="Y.mean", fill="Fill"),
                     width=0.9, size=0.2, position=position_dodge(width=0.75), show.legend=F) +
       geom_errorbar(data=df_summary, aes_string(x="X", ymin="Y.lo", ymax="Y.up", fill="Fill"),
-                    width=0.5, size=0.5, position=position_dodge(width=0.75), show.legend=F)
+                    width=0.5, size=0.5, position=position_dodge(width=0.75), show.legend=F) +
+      guides(fill=guide_legend(nrow=1))
     if(!is.null(colors)){
       plt <- plt +
         scale_fill_manual(values=colors)
@@ -120,7 +121,8 @@ ggJitterPlot <- function(
         geom_crossbar(data=df_summary, aes_string(x="X", y="Y.mean", ymin="Y.mean", ymax="Y.mean", group="Fill", fill="Fill"),
                       width=0.9, size=0.2, position=position_dodge(width=0.75), show.legend=F) +
         geom_errorbar(data=df_summary, aes_string(x="X", ymin="Y.lo", ymax="Y.up", group="Fill", fill="Fill"),
-                      width=0.5, size=0.5, position=position_dodge(width=0.75), show.legend=F)
+                      width=0.5, size=0.5, position=position_dodge(width=0.75), show.legend=F) +
+        guides(fill=guide_legend(nrow=1), shape=guide_legend(nrow=1))
       if(!is.null(colors)){
         plt <- plt +
           scale_fill_manual(values=colors)
@@ -142,12 +144,14 @@ ggJitterPlot <- function(
       }
     }else{
       plt <- plt +
-        geom_point(data=df, aes_string(x="X", y="Y", fill="Fill", shape="Shape"),
+        geom_point(data=df, aes_string(x="X", y="Y", group="Fill", fill="Fill", shape="Shape"),
                    size=2.5, color="black", position=position_jitterdodge(jitter.width=0.25, dodge.width=0.75)) +
         geom_crossbar(data=df_summary, aes_string(x="X", y="Y.mean", ymin="Y.mean", ymax="Y.mean", fill="Fill"),
                       width=0.9, size=0.2, position=position_dodge(width=0.75), show.legend=F) +
         geom_errorbar(data=df_summary, aes_string(x="X", ymin="Y.lo", ymax="Y.up", fill="Fill"),
-                      width=0.5, size=0.5, position=position_dodge(width=0.75), show.legend=F)
+                      width=0.5, size=0.5, position=position_dodge(width=0.75), show.legend=F) +
+        guides(fill=guide_legend(nrow=1, override.aes=list(shape=21)), shape=guide_legend(nrow=1))
+      ## The group determines dodging.
       if(!is.null(colors)){
         plt <- plt +
           scale_fill_manual(values=colors)
