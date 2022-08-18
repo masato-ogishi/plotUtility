@@ -109,7 +109,7 @@ ggJitterPlot <- function(
       plt$layers <- c(
         plt$layers[[1]], ## geom_point
         geom_violin(data=df_violin, aes_string(x="X", y="Y", fill="Fill"),
-                    trim=T, scale="width", alpha=0.25, position=position_dodge(width=0.75), show.legend=F),
+                    trim=T, alpha=0.25, position=position_dodge(width=0.75), show.legend=F),
         plt$layers[2:length(plt$layers)] ## other geoms
       ) ## This order seems to be critical to retain the order of factorized variables!
     }
@@ -138,7 +138,7 @@ ggJitterPlot <- function(
         plt$layers <- c(
           plt$layers[[1]], ## geom_point
           geom_violin(data=df_violin, aes_string(x="X", y="Y", fill="Fill"),
-                      trim=T, scale="width", alpha=0.25, position=position_dodge(width=0.75), show.legend=F),
+                      trim=T, alpha=0.25, position=position_dodge(width=0.75), show.legend=F),
           plt$layers[2:length(plt$layers)] ## other geoms
         ) ## This order seems to be critical to retain the order of factorized variables!
       }
@@ -167,7 +167,7 @@ ggJitterPlot <- function(
         plt$layers <- c(
           plt$layers[[1]], ## geom_point
           geom_violin(data=df_violin, aes_string(x="X", y="Y", fill="Fill"),
-                      trim=T, scale="width", alpha=0.25, position=position_dodge(width=0.75), show.legend=F),
+                      trim=T, alpha=0.25, position=position_dodge(width=0.75), show.legend=F),
           plt$layers[2:length(plt$layers)] ## other geoms
         ) ## This order seems to be critical to retain the order of factorized variables!
       }
