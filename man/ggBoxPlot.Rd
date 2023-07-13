@@ -51,5 +51,5 @@ ggBoxPlot(
 \item{facet_nrow}{Number of rows.}
 }
 \description{
-Box plot.
+A box plot with outliers.
 }

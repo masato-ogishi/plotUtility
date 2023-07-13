@@ -1,5 +1,7 @@
 #' Box plot.
 #'
+#' A box plot with outliers.
+#'
 #' @param df A data.frame of plot data.
 #' @param x A string of the column name for x.
 #' @param y A string of the column name for y.
@@ -52,11 +54,10 @@ ggBoxPlot <- function(
 
   # Plot
   set.seed(12345)
-  plt <- ggplot(NULL) +
+  plt <- ggplot(df, aes(x=X, y=Y, fill=Fill)) +
     geom_boxplot(
-      data=df, aes_string(x="X", y="Y", fill="Fill"),
-      outlier.shape=NA,
-      position=position_jitterdodge(jitter.width=0.4, dodge.width=0.75)
+      outlier.shape=21, outlier.size=1.5,
+      position=position_dodge(width=0.75)
     ) +
     guides(fill=guide_legend(nrow=1))
 
