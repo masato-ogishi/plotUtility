@@ -33,6 +33,23 @@ ggBoxPlot <- function(
     facet_ncol=NULL,
     facet_nrow=NULL
 ){
+  # Format data
+  df_sub <- data.frame("X"=df[[x]], "Y"=df[[y]], "Fill"=df[[fill]])
+  if(is.null(facet)){
+    df_sub$"Facet" <- ""
+    df <- df_sub
+  }else{
+    if(length(facet)==1){
+      df_sub$"Facet" <- df[[facet]]
+      df <- df_sub
+    }
+    if(length(facet)==2){
+      df_sub$"Facet1" <- df[[facet[1]]]
+      df_sub$"Facet2" <- df[[facet[2]]]
+      df <- df_sub
+    }
+  }
+
   # Plot
   set.seed(12345)
   plt <- ggplot(NULL) +
