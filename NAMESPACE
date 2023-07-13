@@ -2,6 +2,7 @@
 
 export(CADD_MAF_Plot)
 export(ggBarPlot)
+export(ggBoxPlot)
 export(ggHistogram)
 export(ggJitterPlot)
 export(savePDF)

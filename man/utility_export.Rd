@@ -13,8 +13,8 @@ savePDF(
   height = 5,
   embedFont = F,
   gsPath = "C:/gs/gs9.16/bin/gswin32c.exe",
- 
-    gsOption = "-sFONTPATH=C:/Windows/Fonts -dCompressFonts=true -dSubsetFonts=false -dEmbedAllFonts=true"
+  gsOption =
+    "-sFONTPATH=C:/Windows/Fonts -dCompressFonts=true -dSubsetFonts=false -dEmbedAllFonts=true"
 )
 
 savePPTX(

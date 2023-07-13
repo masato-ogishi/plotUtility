@@ -36,7 +36,7 @@ ggJitterPlot <- function(
   minN.violin=10,
   ylab="Y",
   yscale="continuous",
-  yscale.expand=T,
+  yscale.expand=F,
   facet_type="wrap",
   facet_scales="free_y",
   facet_space="fixed",
