@@ -56,9 +56,11 @@ ggBoxPlot <- function(
   set.seed(12345)
   plt <- ggplot(df, aes(x=X, y=Y, fill=Fill)) +
     geom_boxplot(
-      outlier.shape=21, outlier.size=1.5,
+      outlier.shape=NA,
       position=position_dodge(width=0.75)
     ) +
+    geom_point(data=df, aes(x=X, y=Y, fill=Fill),
+               size=1.25, shape=21, color="black", position=position_jitterdodge(jitter.width=0.25, dodge.width=0.75)) +
     guides(fill=guide_legend(nrow=1))
 
   # Color
