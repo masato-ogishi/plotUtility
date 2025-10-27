@@ -1,6 +1,6 @@
-#' Bar chart with error bars.
+#' Paired box plot.
 #'
-#' The error bar represents mean and SEM.
+#' Optionally, an P value of Wilcox rank-sum test can be added.
 #'
 #' @param df A data.frame of plot data.
 #' @param x A string of the column name for x.
@@ -18,9 +18,9 @@
 #' @param facet_ncol Number of columns.
 #' @param facet_nrow Number of rows.
 #' @export
-#' @rdname ggBarPlot
-#' @name ggBarPlot
-ggBarPlot <- function(
+#' @rdname ggPairedBoxPlot
+#' @name ggPairedBoxPlot
+ggPairedBoxPlot <- function(
   df,
   x,
   y,

@@ -1,69 +1,74 @@
-#' Box plot.
-#'
-#' A box plot with outliers.
+#' Bar chart for paired observations.
 #'
 #' @param df A data.frame of plot data.
 #' @param x A string of the column name for x.
 #' @param y A string of the column name for y.
 #' @param fill A string of the column name for fill.
+#' @param group A string of the column name for grouping IDs.
 #' @param facet (Optional) A string or a pair of strings of the column name(s) for facet.
 #' @param colors (Optional) A vector of colors.
 #' @param ylab A string for y-axis label.
 #' @param yscale The y-axis scale. Can be either "continuous" or "log10".
-#' @param yscale.expand Logical. Whether the y-scale should be expanded down to zero.
 #' @param facet_type The facetting type. Can be either "wrap" or "grid".
 #' @param facet_scales The facetting scales.
 #' @param facet_space The spacing scheme in the facetting grid.
 #' @param facet_ncol Number of columns.
 #' @param facet_nrow Number of rows.
 #' @export
-#' @rdname ggBoxPlot
-#' @name ggBoxPlot
-ggBoxPlot <- function(
-    df,
-    x,
-    y,
-    fill,
-    facet=NULL,
-    colors=NULL,
-    ylab="Y",
-    yscale="continuous",
-    yscale.expand=F,
-    facet_type="wrap",
-    facet_scales="free_y",
-    facet_space="fixed",
-    facet_ncol=NULL,
-    facet_nrow=NULL
+#' @rdname ggPairedBarPlot
+#' @name ggPairedBarPlot
+ggPairedBarPlot <- function(
+  df,
+  x,
+  y,
+  fill,
+  group,
+  facet=NULL,
+  colors=NULL,
+  ylab="Y",
+  yscale="continuous",
+  facet_type="wrap",
+  facet_scales="free_y",
+  facet_space="fixed",
+  facet_ncol=NULL,
+  facet_nrow=NULL
 ){
   # Format data
-  df_sub <- data.frame("X"=df[[x]], "Y"=df[[y]], "Fill"=df[[fill]])
+  df_sub <- data.frame("X"=df[[x]], "Y"=df[[y]], "Fill"=df[[fill]], "GroupID"=df[[group]])
   if(is.null(facet)){
     df_sub$"Facet" <- ""
     df <- df_sub
+    df_summary <- df %>%
+      dplyr::group_by(X, Fill, Facet) %>%
+      dplyr::summarise(N=n(), Y.mean=mean(Y), Y.up=Y.mean+plotrix::std.error(Y), Y.lo=Y.mean-plotrix::std.error(Y))
   }else{
     if(length(facet)==1){
       df_sub$"Facet" <- df[[facet]]
       df <- df_sub
+      df_summary <- df %>%
+        dplyr::group_by(X, Fill, Facet) %>%
+        dplyr::summarise(N=n(), Y.mean=mean(Y), Y.up=Y.mean+plotrix::std.error(Y), Y.lo=Y.mean-plotrix::std.error(Y))
     }
     if(length(facet)==2){
       df_sub$"Facet1" <- df[[facet[1]]]
       df_sub$"Facet2" <- df[[facet[2]]]
       df <- df_sub
+      df_summary <- df %>%
+        dplyr::group_by(X, Fill, Facet1, Facet2) %>%
+        dplyr::summarise(N=n(), Y.mean=mean(Y), Y.up=Y.mean+plotrix::std.error(Y), Y.lo=Y.mean-plotrix::std.error(Y))
     }
   }
 
   # Plot
   set.seed(12345)
-  plt <- ggplot(df, aes(x=X, y=Y, fill=Fill)) +
-    geom_boxplot(
-      outlier.shape=NA,
-      position=position_dodge(width=0.75)
-    ) +
-    geom_point(data=df, aes(x=X, y=Y, fill=Fill),
-               size=1.25, shape=21, color="black", position=position_jitterdodge(jitter.width=0.25, dodge.width=0.75)) +
+  plt <- ggplot(NULL)
+  plt <- plt +
+    geom_bar(data=df_summary, aes_string(x="X", y="Y.mean", fill="Fill"),
+             stat="identity", width=0.5, position=position_dodge(width=0.75), color="black", show.legend=F) +
+    geom_line(data=df, aes_string(x="X", y="Y", group="GroupID"), color="grey80") +
+    geom_point(data=df, aes_string(x="X", y="Y", fill="Fill"),
+               size=2.5, shape=21, color="black", position=position_jitterdodge(jitter.width=0.4, dodge.width=0.75)) +
     guides(fill=guide_legend(nrow=1))
-
-  # Color
   if(!is.null(colors)){
     plt <- plt +
       scale_fill_manual(values=alpha(colors, 0.5))
@@ -72,7 +77,6 @@ ggBoxPlot <- function(
       viridis::scale_fill_viridis(option="cividis")
   }
 
-  # Facet
   # Facet
   if(!is.null(facet)){
     if(facet_type=="wrap"){
@@ -107,16 +111,14 @@ ggBoxPlot <- function(
     plt <- plt + scale_y_log10(
       name=ylab,
       breaks=scales::log_breaks(),
-      labels=prettyNum
+      labels=prettyNum,
+      expand=expansion(mult=c(0, 0.1))
     )
   }else{
     plt <- plt + scale_y_continuous(
-      name=ylab
+      name=ylab,
+      expand=expansion(mult=c(0, .1))
     )
-  }
-  if(yscale.expand){
-    plt <- plt +
-      expand_limits(y=0)
   }
 
   # Aethetics

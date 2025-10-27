@@ -2,6 +2,7 @@
 % Please edit documentation in R/plotUtility.R
 \docType{package}
 \name{plotUtility}
+\alias{plotUtility-package}
 \alias{plotUtility}
 \alias{package-plotUtility}
 \title{plotUtility: utility functions for R graphics handling}

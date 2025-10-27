@@ -1,42 +1,45 @@
-#' Box plot.
+#' Paired box plot.
 #'
-#' A box plot with outliers.
+#' Optionally, an P value of Wilcox rank-sum test can be added.
 #'
 #' @param df A data.frame of plot data.
 #' @param x A string of the column name for x.
 #' @param y A string of the column name for y.
-#' @param fill A string of the column name for fill.
+#' @param color A string of the column name for color.
 #' @param facet (Optional) A string or a pair of strings of the column name(s) for facet.
 #' @param colors (Optional) A vector of colors.
 #' @param ylab A string for y-axis label.
 #' @param yscale The y-axis scale. Can be either "continuous" or "log10".
-#' @param yscale.expand Logical. Whether the y-scale should be expanded down to zero.
 #' @param facet_type The facetting type. Can be either "wrap" or "grid".
 #' @param facet_scales The facetting scales.
 #' @param facet_space The spacing scheme in the facetting grid.
 #' @param facet_ncol Number of columns.
 #' @param facet_nrow Number of rows.
 #' @export
-#' @rdname ggBoxPlot
-#' @name ggBoxPlot
-ggBoxPlot <- function(
-    df,
-    x,
-    y,
-    fill,
-    facet=NULL,
-    colors=NULL,
-    ylab="Y",
-    yscale="continuous",
-    yscale.expand=F,
-    facet_type="wrap",
-    facet_scales="free_y",
-    facet_space="fixed",
-    facet_ncol=NULL,
-    facet_nrow=NULL
+#' @rdname ggPairedBoxPlot
+#' @name ggPairedBoxPlot
+ggPairedBoxPlot <- function(
+  df,
+  x,
+  y,
+  color,
+  facet=NULL,
+  colors=NULL,
+  ylab="Y",
+  yscale="continuous",
+  facet_type="wrap",
+  facet_scales="free_y",
+  facet_space="fixed",
+  facet_ncol=NULL,
+  facet_nrow=NULL
 ){
   # Format data
-  df_sub <- data.frame("X"=df[[x]], "Y"=df[[y]], "Fill"=df[[fill]])
+  df_sub <- data.frame("X"=df[[x]], "Y"=df[[y]], "Color"=df[[color]])
+  if(is.null(shape)){
+    df_sub$"Shape" <- ""
+  }else{
+    df_sub$"Shape" <- df[[shape]]
+  }
   if(is.null(facet)){
     df_sub$"Facet" <- ""
     df <- df_sub
@@ -54,25 +57,20 @@ ggBoxPlot <- function(
 
   # Plot
   set.seed(12345)
-  plt <- ggplot(df, aes(x=X, y=Y, fill=Fill)) +
-    geom_boxplot(
-      outlier.shape=NA,
-      position=position_dodge(width=0.75)
-    ) +
-    geom_point(data=df, aes(x=X, y=Y, fill=Fill),
-               size=1.25, shape=21, color="black", position=position_jitterdodge(jitter.width=0.25, dodge.width=0.75)) +
-    guides(fill=guide_legend(nrow=1))
-
-  # Color
+  plt <- ggpubr::ggpaired(
+    df, x="X", y="Y", color="Color",
+    line.color="gray", line.size=0.4,
+    palette="npg"
+  ) +
+    guides(color=guide_legend(nrow=1))
   if(!is.null(colors)){
     plt <- plt +
-      scale_fill_manual(values=alpha(colors, 0.5))
+      scale_color_manual(values=alpha(colors, 0.5))
   }else{
     plt <- plt +
-      viridis::scale_fill_viridis(option="cividis")
+      viridis::scale_color_viridis(option="cividis")
   }
 
-  # Facet
   # Facet
   if(!is.null(facet)){
     if(facet_type=="wrap"){
@@ -107,16 +105,15 @@ ggBoxPlot <- function(
     plt <- plt + scale_y_log10(
       name=ylab,
       breaks=scales::log_breaks(),
-      labels=prettyNum
+      labels=prettyNum,
+      expand=expansion(mult=c(0, 0.1))
     )
   }else{
     plt <- plt + scale_y_continuous(
-      name=ylab
-    )
-  }
-  if(yscale.expand){
-    plt <- plt +
-      expand_limits(y=0)
+      name=ylab,
+      expand=expansion(mult=c(0, .1))
+    ) +
+      geom_hline(yintercept=0, linetype="dashed")
   }
 
   # Aethetics

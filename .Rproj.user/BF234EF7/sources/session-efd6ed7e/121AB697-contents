@@ -1,0 +1,60 @@
+# Working environment
+library(tidyverse)
+library(data.table)
+library(aplot)
+library(patchwork)
+library(plotUtility)
+library(plotUtilitySU)
+
+# Data
+cd <- getwd()
+setwd("../");setwd("../");
+dt1 <- readRDS("./Penteon/20250826_SpleenEBVBOrganoid_7days_TCell/DT_Freq.rds")
+dt2 <- readRDS("./Penteon/20250909_SpleenEBVBOrganoid_PD1Blockade_HydroGelTest_7days/DT_Freq_PD1Blockade.rds")
+dt3 <- readRDS("./Penteon/20250910_SpleenEBVBOrganoid_PD1Blockade_7days/DT_Freq.rds")
+setwd(cd)
+dt <- data.table::rbindlist(list(
+  dt1[,.(Date,well_name,DonorID,Condition,Timepoint,cell_parent,cell_target,percent)],
+  dt2[,.(Date,well_name,DonorID,Condition,Timepoint,cell_parent,cell_target,percent)],
+  dt3[,.(Date,well_name,DonorID,Condition,Timepoint,cell_parent,cell_target,percent)]
+), fill=T)
+dt[,Condition:=factor(
+  Condition,
+  levels=c("Spleen","Spleen+EBVB(outer)","Spleen+EBVB")
+)]
+dt <- dt[!is.na(Condition)] ## removing unnecessary conditions
+
+# Normalization
+dt <- dcast(dt, Date+DonorID+Timepoint+cell_parent+cell_target~Condition, fun=mean, value.var="percent")
+dt <- melt(dt, measure=c("Spleen+EBVB(outer)","Spleen+EBVB"), variable.name="Condition", value.name="percent")
+dt[Spleen==0,Spleen:=0.5]
+dt[,FC:=percent/Spleen][,Spleen:=1]
+dt <- dcast(dt, Date+DonorID+Timepoint+cell_parent+cell_target+Spleen~Condition, fun=mean, value.var="FC")
+dt <- melt(dt, measure=c("Spleen","Spleen+EBVB(outer)","Spleen+EBVB"), variable.name="Condition", value.name="FC")
+dt <- dt[is.finite(FC)]
+
+# Visualization
+plt <- ggBarPlot(
+  dt[cell_target %in% c("CD4T_Ki67+Perforin+","CD8T_Ki67+Perforin+")],
+  x="Condition", y="FC", fill="Condition",
+  colors=c("grey50","dodgerblue3","firebrick3"),
+  facet=c("cell_target"), facet_nrow=1,
+  ylab="Fold-change over spleen-only ctrl"
+) +
+  geom_hline(yintercept=1, linetype="dashed") +
+  theme(aspect.ratio=1.6)
+savePDF(plt, o="CompiledAnalysis_Ki67Perforin_FC.pdf", w=10, h=3.5)
+
+# Stat
+ggpubr::compare_means(
+  FC~Condition,
+  data=dt[Condition %in% c("Spleen","Spleen+EBVB")][cell_target %in% c("CD4T_Ki67+Perforin+","CD8T_Ki67+Perforin+")],
+  ref.group="Spleen",
+  group.by="cell_target",
+  p.adjust.method="BH"
+)
+# # A tibble: 2 × 9
+#   cell_target         .y.   group1 group2            p  p.adj p.format p.signif method  
+#   <chr>               <chr> <chr>  <chr>         <dbl>  <dbl> <chr>    <chr>    <chr>   
+# 1 CD4T_Ki67+Perforin+ FC    Spleen Spleen+EBVB 0.0204  0.02   0.0204   *        Wilcoxon
+# 2 CD8T_Ki67+Perforin+ FC    Spleen Spleen+EBVB 0.00106 0.0021 0.0011   **       Wilcoxon

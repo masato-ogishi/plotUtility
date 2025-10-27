@@ -1,0 +1,94 @@
+# Working environment
+library(tidyverse)
+library(data.table)
+library(aplot)
+library(patchwork)
+library(plotUtility)
+library(plotUtilitySU)
+
+# Data
+cd <- getwd()
+setwd("../");setwd("../");
+dt1 <- readRDS("./Penteon/20251001_SpleenEBVBOrganoid_Flow_BulkRNASeq_7days_TCell/DT_Freq.rds")
+dt2 <- readRDS("./Penteon/20251003_SpleenEBVBOrganoid_PD1Blockade_7days_TCell/DT_Freq.rds")
+setwd(cd)
+dt <- data.table::rbindlist(list(
+  dt1[,.(Date,well_name,DonorID,Condition,Timepoint,cell_parent,cell_target,N_parent,N_target,percent)],
+  dt2[,.(Date,well_name,DonorID,Condition,Timepoint,cell_parent,cell_target,N_parent,N_target,percent)]
+), fill=T)
+dt[,Condition:=factor(
+  Condition,
+  levels=c("Spleen","Spleen+EBVB")
+)]
+dt <- dt[!is.na(Condition)] ## removing unnecessary conditions
+dt[,SampleUID:=paste0(Date,"_",DonorID,"_",Timepoint)]
+
+# Normalization
+dt <- dcast(dt, Date+DonorID+Timepoint+cell_parent+cell_target~Condition, fun=mean, value.var="percent")
+dt <- melt(dt, measure=c("Spleen+EBVB"), variable.name="Condition", value.name="percent")
+dt[,FC:=percent/Spleen][,Spleen:=1]
+dt <- dcast(dt, Date+DonorID+Timepoint+cell_parent+cell_target+Spleen~Condition, fun=mean, value.var="FC")
+dt <- melt(dt, measure=c("Spleen","Spleen+EBVB"), variable.name="Condition", value.name="FC")
+dt <- dt[is.finite(FC)]
+
+# Visualization
+plt1 <- ggPairedBarPlot(
+  dt %>%
+    mutate(cell_target=factor(
+      cell_target,
+      levels=c("CD4T_CD27+","CD8T_CD27+","CD4T_41BB+","CD8T_41BB+"))
+    ) %>%
+    filter(!is.na(cell_target)),
+  x="Condition", y="percent", fill="Condition", group="SampleUID",
+  colors=c("grey50","firebrick3"),
+  facet=c("cell_target"), facet_nrow=1,
+  ylab="Fold-change over spleen-only ctrl"
+) +
+  theme(aspect.ratio=1.6)
+plt2 <- ggBarPlot(
+  dt %>%
+    mutate(cell_target=factor(
+      cell_target,
+      levels=c("CD4T_PD1+","CD8T_PD1+","CD4T_LAG3+","CD8T_LAG3+",
+               "CD4T_TIM3+","CD8T_TIM3+","CD4T_TIGIT+","CD8T_TIGIT+"))
+    ) %>% filter(!is.na(cell_target)),
+  x="Condition", y="FC", fill="Condition",
+  colors=c("grey50","firebrick3"),
+  facet=c("cell_target"), facet_nrow=1,
+  ylab="Fold-change over spleen-only ctrl"
+) +
+  geom_hline(yintercept=1, linetype="dashed") +
+  theme(aspect.ratio=1.6)
+plt3 <- ggBarPlot(
+  dt %>%
+    mutate(cell_target=factor(
+      cell_target,
+      levels=c("CD4T_GranzymeA+","CD8T_GranzymeA+",
+               "CD4T_GranzymeB+","CD8T_GranzymeB+",
+               "CD4T_Perforin+","CD8T_Perforin+",
+               "CD4T_Ki67+","CD8T_Ki67+"))
+    ) %>% filter(!is.na(cell_target)),
+  x="Condition", y="FC", fill="Condition",
+  colors=c("grey50","firebrick3"),
+  facet=c("cell_target"), facet_nrow=1,
+  ylab="Fold-change over spleen-only ctrl"
+) +
+  geom_hline(yintercept=1, linetype="dashed") +
+  theme(aspect.ratio=1.6)
+savePDF(plt1, o="CompiledAnalysis_FC_1.pdf", w=30, h=3.5)
+savePDF(plt2, o="CompiledAnalysis_FC_2.pdf", w=30, h=3.5)
+savePDF(plt3, o="CompiledAnalysis_FC_3.pdf", w=30, h=3.5)
+
+# Stat
+ggpubr::compare_means(
+  FC~Condition,
+  data=dt[Condition %in% c("Spleen","Spleen+EBVB")][cell_target %in% c("CD4T_Ki67+Perforin+","CD8T_Ki67+Perforin+")],
+  ref.group="Spleen",
+  group.by="cell_target",
+  p.adjust.method="BH"
+)
+# # A tibble: 2 × 9
+#   cell_target         .y.   group1 group2            p  p.adj p.format p.signif method
+#   <chr>               <chr> <chr>  <chr>         <dbl>  <dbl> <chr>    <chr>    <chr>
+# 1 CD4T_Ki67+Perforin+ FC    Spleen Spleen+EBVB 0.0204  0.02   0.0204   *        Wilcoxon
+# 2 CD8T_Ki67+Perforin+ FC    Spleen Spleen+EBVB 0.00106 0.0021 0.0011   **       Wilcoxon
